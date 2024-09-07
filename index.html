@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Scale</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/manifest/apple-touch-icon.png?v2=true">
+    <link rel="icon" type="image/png" sizes="32x32" href="/manifest/favicon-32x32.png?v2=true">
+    <link rel="icon" type="image/png" sizes="16x16" href="/manifest/favicon-16x16.png?v2=true">
+    <link rel="manifest" href="/manifest/site.webmanifest?v2=true">
+    <link rel="shortcut icon" href="/manifest/favicon.ico?v2=true">
+    <meta name="apple-mobile-web-app-title" content="Scale">
+    <meta name="application-name" content="Scale">
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="msapplication-TileImage" content="/manifest/mstile-144x144.png?v2=true">
+    <meta name="msapplication-config" content="/manifest/browserconfig.xml?v2=true">
+    <meta name="theme-color" content="#000000">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 10px 20px;
+            margin-top: 40px;
+            font-size: 36px;
+            font-weight: 600;
+            background-color: rgba(58, 58, 58, 0);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .scale-circle {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #weightLabel {
+            font-size: 48px;
+            font-weight: 300;
+        }
+
+        #headerWeightLabel {
+            font-size: 17px;
+            font-weight: 300;
+            display: none;
+        }
+
+        .unit {
+            font-size: 24px;
+            margin-top: 10px;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        #tareButton {
+            background-color: #007AFF;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+        }
+
+        #settingsModal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #333;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            color: white;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        select {
+            margin: 10px 0;
+            padding: 5px;
+            background-color: #444;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        Scale
+        <span id="headerWeightLabel"></span>
+    </header>
+    <div class="content">
+        <div class="scale-circle" id="scaleCircle">
+            <div id="weightLabel">0.00 g</div>
+        </div>
+        <div class="unit" id="unitLabel" style="display: none;">grams</div>
+        <br>
+        <button id="tareButton">Tare</button>
+    </div>
+    <nav class="nav-bar" style="display: none;">
+        <a href="#" class="nav-item" id="scaleLink">
+            <img src="/icons/scalemass.png" alt="Scale Icon" style="max-height: 30px;">
+            Scale
+        </a>
+        <a href="#" class="nav-item" id="settingsLink">
+            <img src="/icons/gear.png" alt="Settings Icon" style="max-height: 30px;">
+            Settings
+        </a>
+    </nav>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Settings</h2>
+            <label for="unitSelect">Weight Unit:</label>
+            <select id="unitSelect">
+                <option value="0">Grams (g)</option>
+                <option value="1">Ounces (oz)</option>
+                <option value="2">Pounds (lb)</option>
+                <option value="3">Newtons (N)</option>
+            </select>
+            <br>
+            <label for="sensitivitySelect">Sensitivity:</label>
+            <select id="sensitivitySelect">
+                <option value="0">Low</option>
+                <option value="1" selected>Medium</option>
+                <option value="2">High</option>
+            </select>
+        </div>
+    </div>
+
+    <script>
+        var weightLabel = document.getElementById('weightLabel');
+        var headerWeightLabel = document.getElementById('headerWeightLabel');
+        var tareButton = document.getElementById('tareButton');
+        var unitLabel = document.getElementById('unitLabel');
+        var settingsModal = document.getElementById('settingsModal');
+        var settingsLink = document.getElementById('settingsLink');
+        var closeBtn = document.getElementsByClassName('close')[0];
+        var unitSelect = document.getElementById('unitSelect');
+        var sensitivitySelect = document.getElementById('sensitivitySelect');
+        var scaleCircle = document.getElementById('scaleCircle');
+
+        var tareForce = 0;
+        var touch;
+        var touches;
+        var touchCount = 0;
+
+        var forceConversionRatios = [276, 346, 415]; // Sensitivity for different iOS settings
+        var selected3DTSettingIndex = 0; // Default sensitivity index
+        var weightConvertGramsRatios = [1.0, 0.03527396, 0.00220462, 0.00980665]; // Conversion ratios for g, oz, lb, N
+        var weightUnitIndex = 0; // Default is grams (g)
+        var weightUnits = ['g', 'oz', 'lb', 'N'];
+
+        // Delay Tare function (waits 3 seconds before taring)
+        function delayTareWeight() {
+            weightLabel.innerText = "Taring...";
+            setTimeout(tareWeight, 3000); // Wait 3 seconds before executing tare
+        }
+
+        // Tare function
+        function tareWeight() {
+            tareForce = getCurrent3DTForce();
+            weightLabel.innerText = "Done!";
+            setTimeout(updateForce, 1000); // Update force after 1 second
+        }
+
+        // Update force when touched
+        function onTouchStart(e) {
+            touch = e.touches[0];
+            touches = e.touches;
+            touchCount = e.touches.length;
+            updateForce();
+        }
+
+        function onTouchMove(e) {
+            e.preventDefault();
+            touches = e.touches;
+            touch = e.touches[0];
+            touchCount = e.touches.length;
+            updateForce();
+        }
+
+        function onTouchForceChange(e) {
+            e.preventDefault();
+            touch = e.touches[0];
+            touches = e.touches;
+            touchCount = e.touches.length;
+            updateForce();
+        }
+
+        // Update weight based on current force
+        function updateForce() {
+            var raw3dtForce = getCurrent3DTForce();
+            var current3dtForce = raw3dtForce - tareForce;
+            var currentGramsForce = getForceInGrams(current3dtForce);
+            var displayedWeight = getDisplayedWeight(currentGramsForce);
+            weightLabel.innerText = displayedWeight;
+            
+            // Move the weight reading to the header if it exceeds 1g
+            if (currentGramsForce > 1) {
+                headerWeightLabel.innerText = displayedWeight;
+                headerWeightLabel.style.display = 'block';
+                weightLabel.style.visibility = 'visible';
+            } else {
+                headerWeightLabel.style.display = 'none';
+                weightLabel.style.visibility = 'visible';
+            }
+        }
+
+        // Get the 3D Touch force value
+        function getCurrent3DTForce() {
+            var totalForce = 0;
+            for (var i = 0; i < touchCount; i++) {
+                totalForce += touches[i].force;
+            }
+            return totalForce;
+        }
+
+        // Convert 3D Touch force to grams
+        function getForceInGrams(scale) {
+            return scale * forceConversionRatios[selected3DTSettingIndex];
+        }
+
+        // Convert and display the weight in the selected unit
+        function getDisplayedWeight(grams) {
+            var conversionRatio = weightConvertGramsRatios[weightUnitIndex];
+            var finalWeight = grams * conversionRatio;
+            return finalWeight.toFixed(2) + ' ' + weightUnits[weightUnitIndex];
+        }
+
+        // Prevent zoom and page movement
+        window.addEventListener("touchmove", function (e) {
+            if (e.scale !== 1) { e.preventDefault(); } // Prevent zoom
+        }, { passive: false });
+
+        // Settings modal
+        settingsLink.onclick = function() {
+            settingsModal.style.display = "block";
+        }
+
+        closeBtn.onclick = function() {
+            settingsModal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == settingsModal) {
+                settingsModal.style.display = "none";
+            }
+        }
+
+        unitSelect.onchange = function() {
+            weightUnitIndex = parseInt(this.value);
+            unitLabel.innerText = weightUnits[weightUnitIndex];
+            updateForce();
+        }
+
+        sensitivitySelect.onchange = function() {
+            selected3DTSettingIndex = parseInt(this.value);
+            updateForce();
+        }
+
+        // Attach event listeners for 3D Touch events to the scale circle
+        window.onload = function () {
+            scaleCircle.addEventListener('touchstart', onTouchStart, false);
+            scaleCircle.addEventListener('touchmove', onTouchMove, false);
+            scaleCircle.addEventListener('touchforcechange', onTouchForceChange, false);
+        };
+
+        // Attach the tare button to the delayTareWeight function
+        tareButton.onclick = delayTareWeight;
+    </script>
+</body>
+
+</html>
