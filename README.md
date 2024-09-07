@@ -1,5 +1,5 @@
 # 3DTouchScale
-Simple Scale using 3D Touch.
+Simple scale PWA using 3D Touch
 
 ## How it works
 See https://ashertrockman.com/ios/2015/10/24/3d-touch-scale.html
