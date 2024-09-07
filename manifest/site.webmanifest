@@ -3,12 +3,12 @@
     "short_name": "Scale",
     "icons": [
         {
-            "src": "/manifest/android-chrome-192x192.png?v2=true",
+            "src": "manifest/android-chrome-192x192.png?v2=true",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/manifest/android-chrome-384x384.png?v2=true",
+            "src": "manifest/android-chrome-384x384.png?v2=true",
             "sizes": "384x384",
             "type": "image/png"
         }
